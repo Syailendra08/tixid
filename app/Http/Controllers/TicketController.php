@@ -19,14 +19,18 @@ class TicketController extends Controller
         $hour = $schedule['hours'] [$hourId] ?? '-';
 
         // ambil data kursi di tiket yg sesuai dengan jam, tanggal, dan sudah dibayar
-        $seats = Ticket::whereHas('ticketPayment', function($q) {
+        $seats = Ticket::whereHas('ticketPayment', function($q) { // where has mencari ke relasi
             // whereDate : mencari berdasarkan tanggal
 
             $q->whereDate('paid_date', now()->format('Y-m-d'));
         })->whereTime('hours', $hour)->pluck('rows_of_seats');
         // pluck() : mengambil hanya dari 1 field, bedanya dengan value() kalau value() ambil 1 data pertama dari field tersebut, kalo pluck()ambil semua data dari field tersebut
-        dd($seats);
-        return view('schedule.show-seats', compact('schedule', 'hour'));
+
+        $seatsFormat = array_merge(...$seats);
+        // (...) : spread operartor : mengeluarkan nilai array
+        // spread operator mengeluar niali array lalu disimpen lg ke 1 dimensi oleh arrray_merge
+        //dd($seatsFormat);
+        return view('schedule.show-seats', compact('schedule', 'hour', 'seatsFormat'));
     }
     /**
      * Display a listing of the resource.
