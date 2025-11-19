@@ -96,6 +96,7 @@ class TicketController extends Controller
         ]);
 
         $ticket = Ticket::find($request->ticket_id);
+        $totalPrice = $ticket->total_price;
         if ($request->promo_id != NULL) {
             $promo = Promo::find($request->promo_id);
             if($promo['type'] == 'percent') {
@@ -115,6 +116,12 @@ class TicketController extends Controller
             'message' => 'Berhasil membuat pesanan tiket sementara!',
             'data' => $createData
         ]);
+    }
+
+    public function ticketPaymentPage($ticketId)
+    {
+        $ticket = Ticket::where('id', $ticketId)->with(['promo', 'ticketPayment', 'schedule'])->first();
+        return view('schedule.payment', compact('ticket'));
     }
     public function show(Ticket $ticket)
     {
