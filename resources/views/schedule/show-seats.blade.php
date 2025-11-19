@@ -7,7 +7,7 @@
                 <b>{{ $schedule['cinema']['name'] }}</b>
                 {{-- now() : amvil tgl hari ini, format d (tgl) F (nama bulan) Y (tahun) --}}
                 <br>
-                <b>{{ now()->format('d F, Y') }} || {{ $hour }}</b>
+                <b>{{ now()->format('d F, Y') }} | {{ $hour }}</b>
             </div>
             <div class="alert my-2 alert-secondary">
                 <i class="fa-solid fa-info text-danger"></i> Anak berusia 2 tahun keatas wajib membeli tiket.
