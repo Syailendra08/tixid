@@ -3,11 +3,16 @@
 @section('content')
     <div class="container mt-5">
         <h5>Grafik Pembelian Tiket</h5>
-    </div>
     <div class="row">
-        <div class="col">
+        <div class="col-6">
+            <h5>Pembelian tiket Bulan {{ now()->format('F') }}</h5>
             <canvas id="chartBar"></canvas>
         </div>
+        <div class="col-6">
+            <h5>Perbandingan Film Aktif dan Non-Aktif</h5>
+            <canvas id="chartPie"></canvas>
+        </div>
+    </div>
     </div>
 @endsection
 
@@ -16,6 +21,7 @@
     <script>
         let labelChartBar = null;
         let dataChartBar = null;
+        let dataChartPie = null;
         // dijalankan ketika broser sudah generate kode htmlnya (pas di refresh)4
         $(function() {
             $.ajax({
@@ -24,14 +30,27 @@
                 success: function(response) {
                     labelChartBar = response.labels;
                     dataChartBar = response.data;
-                    // panggil func untuk 
+                    // panggil func untuk
                     showChart();
                 },
                 error: function(err) {
                     alert('Gagal mengambil data untuk chart tiket!');
                 }
+            });
+            $.ajax({
+                url: "{{ route('admin.movies.chart') }}",
+                method: "GET",
+                success: function(response) {
+                    dataChartPie = response.data;
+                    showChartPie();
+                },
+                error: function(err) {
+                    alert('Gagal mengambil data untuk chart film!')
+                }
             })
         });
+
+
 
         function showChart() {
             const ctx = document.getElementById('chartBar');
@@ -52,6 +71,27 @@
                             beginAtZero: true
                         }
                     }
+                }
+            });
+        }
+
+        function showChartPie() {
+            const ctx2 = document.getElementById('chartPie');
+
+            new Chart(ctx2, {
+                type: 'pie',
+                data: {
+                    labels: ['Film Aktif', 'Film Tidak Aktif'
+                    ],
+                    datasets: [{
+                        label: 'My First Dataset',
+                        data: dataChartPie,
+                        backgroundColor: [
+                            'rgb(255, 99, 132)',
+                            'rgb(54, 162, 235)',
+                        ],
+                        hoverOffset: 4
+                    }]
                 }
             });
         }
