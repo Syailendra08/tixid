@@ -72,6 +72,7 @@ Route::get('/', [MovieController::class, 'home'])->name('home');
     // name('admin') : pake titik karena nanti akkkan digabungkan (admin.dashboard)
 
 Route::middleware('isAdmin')->prefix('/admin')->name('admin.')->group(function() {
+    Route::get('/tickets/chart', [TicketController::class, 'chartData'])->name('tickets.chart');
     Route::get('/dashboard', function() {
         return view('admin.dashboard');
     })->name('dashboard');

@@ -32,6 +32,34 @@ class TicketController extends Controller
         //dd($seatsFormat);
         return view('schedule.show-seats', compact('schedule', 'hour', 'seatsFormat'));
     }
+
+
+    public function chartData()
+    {
+        // ambil data dibulan ini
+        $month = now()->format('m'); // bulan saat ini
+        // ambil data tket yang sudah dibayar dan dibayar di bulan ini, kemudian kelompokan datanya berdasarkan tanggal pembayaran (groupBy)
+        $tickets = Ticket::whereHas('ticketPayment', function($q) use($month) {
+            //whereMonth: mencari berdasakrna bulan
+            $q->whereMonth('paid_date', $month);
+        })->get()->groupBy(function($ticket) {
+            return \Carbon\Carbon::parse($ticket->ticketPayment->paid_date)->format('Y-m-d');
+        })->toArray(); 
+        // $ticket berisi ["tanggal"] => dataditgltersebut
+        // pisahkan tanggal untuk label di chartjs 4
+        $labels = array_keys($tickets);
+        // hitung isi data dikey tanggal tersebut untuk data di ChartJs
+        $data = [];
+        foreach ($tickets as $item) {
+            // simpan hasil count() ke array data
+            array_push($data, count($item));
+
+        }
+        return response()->json([
+            'labels' => $labels,
+            'data' => $data,
+        ]);
+    }
     /**
      * Display a listing of the resource.
      */
