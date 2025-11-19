@@ -34,7 +34,11 @@
         <div class="d-flex justify-contentend">
             <p><b>Rp. {{number_format($price, 0, ',', '.')}}</b></p>
         </div>
+        <form action="{{route('tickets.payment.proof', $ticket['id'])}} " method="POST">
+            @csrf_token
+            @method('PATCH')
         <button class="btn btn-primary btn-lg btn-block">Sudah dibayar</button>
+        </form>
     </div>
 </div>
 @endsection

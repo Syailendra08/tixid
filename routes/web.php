@@ -24,6 +24,8 @@ Route::middleware('isUser')->group(function() {
         Route::get('/{ticketId}/order', [TicketController::class, 'ticketOrder'])->name('order');
         Route::post('/payment', [TicketController::class, 'ticketPayment'])->name('payment');
         Route::get('/{ticketId}/payment', [TicketController::class, 'ticketPaymentPage'])->name('payment.page');
+        Route::patch('/{ticketId}/payment/proof', [TicketController::class, 'paymentProof'])->name('payment.proof');
+        Route::get('/{ticketId}/receipt', [TicketController::class, 'ticketReceipt'])->name('receipt');
 
     });
 });

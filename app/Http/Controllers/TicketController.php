@@ -123,6 +123,25 @@ class TicketController extends Controller
         $ticket = Ticket::where('id', $ticketId)->with(['promo', 'ticketPayment', 'schedule'])->first();
         return view('schedule.payment', compact('ticket'));
     }
+
+    public function paymentProof($ticketId)
+    {
+        $updateData = Ticket::where('id', $ticketId)->update([
+            'actived' => 1,
+        ]);
+        // karena data hanya ada ticket_id jd update paymentemt nerdasarkan ticket_idnya
+        $updatePayment = ticketPayment::where('ticket_id', $ticketId)->update([
+            'paid_date' => now()
+        ]);
+        // karena route receipt perlu ticket_id maka perlu dikirjm
+        return redirect()->route('tickets.receipt', $ticketId);
+    }
+
+    public function ticketReceipt($ticketId)
+    {
+        $ticket = Ticket::where('id', $ticketId)->with(['schedule', 'schedule.cinema', 'schedule.movie', 'ticketPayment'])->first();
+        return view ('schedule.receipt', compact('ticket'));
+    }
     public function show(Ticket $ticket)
     {
         //
