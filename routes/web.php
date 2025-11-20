@@ -20,12 +20,16 @@ Route::middleware('isUser')->group(function() {
     Route::get('/schedules/{scheduleId}/hours/{hourId}/show-seats', [TicketController::class, 'showSeats'])
     ->name('schedules.seats');
     Route::prefix('/tickets')->name('tickets.')->group(function() {
+        Route::get('/', [TicketController::class, 'index'])->name('index');
         Route::post('/', [TicketController::class, 'store'])->name('store');
         Route::get('/{ticketId}/order', [TicketController::class, 'ticketOrder'])->name('order');
+        // pembuatan barcode pembayaran
         Route::post('/payment', [TicketController::class, 'ticketPayment'])->name('payment');
+        //halaman yang menampilkan barcode
         Route::get('/{ticketId}/payment', [TicketController::class, 'ticketPaymentPage'])->name('payment.page');
         Route::patch('/{ticketId}/payment/proof', [TicketController::class, 'paymentProof'])->name('payment.proof');
         Route::get('/{ticketId}/receipt', [TicketController::class, 'ticketReceipt'])->name('receipt');
+        Route::get('/{ticketId}/pdf', [TicketController::class, 'exportPDF'])->name('export-pdf');
 
     });
 });

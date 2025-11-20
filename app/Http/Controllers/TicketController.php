@@ -7,7 +7,9 @@ use App\Models\TicketPayment;
 use App\Models\Schedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class TicketController extends Controller
 {
@@ -44,7 +46,7 @@ class TicketController extends Controller
             $q->whereMonth('paid_date', $month);
         })->get()->groupBy(function($ticket) {
             return \Carbon\Carbon::parse($ticket->ticketPayment->paid_date)->format('Y-m-d');
-        })->toArray(); 
+        })->toArray();
         // $ticket berisi ["tanggal"] => dataditgltersebut
         // pisahkan tanggal untuk label di chartjs 4
         $labels = array_keys($tickets);
@@ -65,7 +67,13 @@ class TicketController extends Controller
      */
     public function index()
     {
-        //
+        $ticketActive = Ticket::whereHas('ticketPayment', function($q) {
+            $q->whereDate('booked_date', now()->format('Y-m-d'))->where('paid_date', '<>', NULL);
+        })->get();
+        $ticketNonActive = Ticket::whereHas('ticketPayment', function($q) {
+            $q->whereDate('booked_date', '<', now()->format('Y-m-d'))->where('paid_date', '<>', NULL);
+        })->get();
+        return view('ticket.index', compact('ticketActive', 'ticketNonActive'));
     }
 
     /**
@@ -182,6 +190,20 @@ class TicketController extends Controller
     {
         $ticket = Ticket::where('id', $ticketId)->with(['schedule', 'schedule.cinema', 'schedule.movie', 'ticketPayment'])->first();
         return view ('schedule.receipt', compact('ticket'));
+    }
+
+    public function exportPdf($ticketId)
+    {
+        // use Barryvdh\DomPDF\Facade\Pdf;
+        // siapkan data. data yang  dikirim harus berupa array
+        $ticket = Ticket::where('id', $ticketId)->with(['schedule', 'schedule.cinema', 'schedule.movie', 'promo', 'ticketPayment'])->first()->toArray();
+        // buat insial nama data yang nanit akan digunalan pada blade pdf
+        view()->share('ticket', $ticket);
+        // generate file blade yg akan di cetak pdf
+        $pdf = Pdf::loadView('schedule.export-pdf', $ticket);
+        // untuk pdf dengan nama file tertentu
+        $fileName = 'TICKET' . $ticket['id'] . '.pdf';
+        return $pdf->download($fileName);
     }
     public function show(Ticket $ticket)
     {

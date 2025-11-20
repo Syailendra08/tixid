@@ -57,6 +57,7 @@
                                 <li>
                                     <a class="dropdown-item" href="{{ route('admin.users.index') }}">Data Petugas</a>
                                 </li>
+
                             </ul>
                         </li>
 
@@ -75,7 +76,7 @@
                             <a class="nav-link" href="{{route('cinemas.list')}}">Bioskop</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Tiket</a>
+                            <a class="nav-link" href="{{route('tickets.index')}}">Tiket</a>
                         </li>
                     @endif
                 </ul>
